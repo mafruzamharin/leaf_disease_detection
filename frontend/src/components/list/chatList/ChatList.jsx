@@ -1,31 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./chatlist.css";
 
-const ChatList = () => {
+const ChatList = ({ onSelectChat, activeChatId, socket }) => {
   const [addMode, setAddMode] = useState(false);
   const [input, setInput] = useState("");
+  const [chats, setChats] = useState([]);
 
-  // Mock data to preserve the UI look
-  const mockChats = [
-    {
-      chatId: "1",
-      lastMessage: "Hello! How can I help with your crops?",
-      isSeen: false,
-      user: {
-        username: "AgroAI Assistant",
-        avatar: "./avatar.png",
-      },
-    },
-    {
-      chatId: "2",
-      lastMessage: "The leaf looks like it has Late Blight.",
-      isSeen: true,
-      user: {
-        username: "Plant Doctor",
-        avatar: "./avatar.png",
-      },
-    },
-  ];
+  useEffect(() => {
+    // Request chats when component mounts
+    socket.emit("get_chats");
+
+    // Listen for incoming chat updates
+    socket.on("update_chats", (data) => {
+      setChats(data);
+    });
+
+    return () => {
+      socket.off("update_chats");
+    };
+  }, [socket]);
+
+  // Filter based on search input
+  const filteredChats = chats.filter((c) =>
+    c.user.username.toLowerCase().includes(input.toLowerCase())
+  );
 
   return (
     <div className="chatList">
@@ -47,12 +45,15 @@ const ChatList = () => {
         />
       </div>
 
-      {mockChats.map((chat) => (
+      {filteredChats.map((chat) => (
         <div
-          className="item"
+          className={`item ${chat.chatId === activeChatId ? "active" : ""}`}
           key={chat.chatId}
+          onClick={() => onSelectChat(chat)}
           style={{
-            backgroundColor: chat?.isSeen ? "transparent" : "#5183fe",
+            // UPDATED LOGIC: Active chat gets #5183fe, others get transparent
+            backgroundColor: chat.chatId === activeChatId ? "#5183fe" : "transparent",
+            cursor: "pointer"
           }}
         >
           <img src={chat.user.avatar || "./avatar.png"} alt="avatar" />
@@ -63,7 +64,6 @@ const ChatList = () => {
         </div>
       ))}
 
-      {/* AddUser component placeholder */}
       {addMode && <div className="addUserPlaceholder">Add User UI</div>}
     </div>
   );
