@@ -8,6 +8,9 @@ from flask_cors import CORS
 import redis
 import sys
 
+# --- IMPORT OUR ML MODULE ---
+from model_handler import predict_leaf_disease
+
 app = Flask(__name__)
 CORS(app)
 
@@ -115,15 +118,17 @@ def handle_send_message(data):
     redis_client.hset(f"chat:{room}", 'lastMessage', last_msg_text)
     
     emit('receive_message', user_message, room=room)
+
+    emit('typing', {'isTyping': True}, room=room)
     
     socketio.start_background_task(target=generate_ai_response, room=room, received_data=user_message)
 
 def generate_ai_response(room, received_data):
-    time.sleep(1.5) 
+    time.sleep(2)
     ai_text = "I received your message. How can I help further?"
     
     if received_data.get('img'):
-        ai_text = "Analyzing your crop image... It looks like early signs of Late Blight. I recommend applying a fungicide."
+        ai_text = predict_leaf_disease(received_data.get('img'))
         
     ai_reply = {
         'senderId': 'ai_bot', 
@@ -135,6 +140,8 @@ def generate_ai_response(room, received_data):
     redis_client.rpush(f"messages:{room}", json.dumps(ai_reply))
     redis_client.hset(f"chat:{room}", 'lastMessage', ai_text)
     redis_client.hset(f"chat:{room}", 'isSeen', 'False')
+
+    socketio.emit('typing', {'isTyping': False}, room=room)
     
     socketio.emit('receive_message', ai_reply, room=room)
     

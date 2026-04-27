@@ -11,12 +11,14 @@ const Chat = ({ activeChat, socket }) => {
     url: "",
   });
 
+  const [isTyping, setIsTyping] = useState(false);
+
   const endRef = useRef(null);
 
   // Auto-scroll to bottom
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, img.url]);
+  }, [messages, img.url, isTyping]);
 
   // Handle Socket events when the active room changes
   useEffect(() => {
@@ -35,10 +37,15 @@ const Chat = ({ activeChat, socket }) => {
       setMessages((prev) => [...prev, newMessage]);
     });
 
+    socket.on("typing", (data) => {
+      setIsTyping(data.isTyping);
+    });
+
     // Cleanup listeners when switching rooms
     return () => {
       socket.off("chat_history");
       socket.off("receive_message");
+      socket.off("typing");
     };
   }, [activeChat, socket]);
 
@@ -125,6 +132,21 @@ const Chat = ({ activeChat, socket }) => {
             </div>
           </div>
         )}
+
+
+        {isTyping && (
+          <div className="message">
+            <div className="texts">
+              <div className="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        
         <div ref={endRef}></div>
       </div>
 

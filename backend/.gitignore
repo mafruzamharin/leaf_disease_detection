@@ -1,1 +1,71 @@
-env
+# =========================
+# Python / Flask specifics
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Flask instance folder (contains local configuration and local database)
+instance/
+
+# Flask sessions
+.webassets-cache
+
+# =========================
+# Virtual Environments
+# =========================
+venv/
+.venv/
+env/
+.env_dir/
+ENV/
+
+# =========================
+# Environment Variables
+# =========================
+# ALWAYS ignore your environment files to prevent leaking API keys and secrets!
+.env
+.env.local
+.flaskenv
+
+# =========================
+# Databases
+# =========================
+*.sqlite3
+*.db
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Testing / Coverage
+# =========================
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+nosetests.xml
+
+# =========================
+# OS / IDE / Editors
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Machine Learning / Data
+# =========================
+*.h5
+*.hdf5
+*.keras
+models/
+datasets/
