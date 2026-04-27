@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
+import ReactMarkdown from "react-markdown";
 
 const Chat = ({ activeChat, socket }) => {
   const [open, setOpen] = useState(false);
@@ -118,8 +119,22 @@ const Chat = ({ activeChat, socket }) => {
           >
             <div className="texts">
               {message.img && <img src={message.img} alt="attachment" style={{maxWidth: "100%", borderRadius: "10px"}} />}
-              {message.text && <p>{message.text}</p>}
-              <span>{new Date(message.createdAt).toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit', hour12: true}) || "Just now"}</span>
+              {message.text && (
+                <div className="message-text">
+                  <ReactMarkdown>{message.text}</ReactMarkdown>
+                </div>
+              )}
+              <span>
+              {message.createdAt 
+                ? new Date(message.createdAt).toLocaleString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    hour: 'numeric', 
+                    minute:'2-digit', 
+                    hour12: true 
+                  }) 
+                : "Just now"}
+            </span>
             </div>
           </div>
         ))}
@@ -146,7 +161,7 @@ const Chat = ({ activeChat, socket }) => {
           </div>
         )}
 
-        
+
         <div ref={endRef}></div>
       </div>
 

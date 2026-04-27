@@ -59,7 +59,11 @@ const ChatList = ({ onSelectChat, activeChatId, socket }) => {
           <img src={chat.user.avatar || "./avatar.png"} alt="avatar" />
           <div className="texts">
             <span>{chat.user.username}</span>
-            <p>{chat.lastMessage}</p>
+            <p>
+            {chat.lastMessage?.length > 50 
+              ? chat.lastMessage.substring(0, 50) + "..." 
+              : chat.lastMessage}
+          </p>
           </div>
         </div>
       ))}
