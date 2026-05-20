@@ -74,13 +74,46 @@ leaf_disease_detection/
 
 ### Installation
 
-#### Option 1: Local Development
+#### Step 1: Install Redis using Docker Compose
+
+```bash
+docker-compose up -d
+```
+This will start:
+- Redis server (port 6379)
+
+### Environment Variables
+
+Create a `.env` file in the `backend` directory:
+```
+GEMINI_API_KEY=your_api_key_here
+```
+
+#### Step 2: Setup frontend and backend
 
 **Backend Setup:**
+Go into backend folder and setup virtual environment
 ```bash
 cd backend
+python -m venv env
+```
+Activate the Environment
+Windows (CMD):
+```bash
+env\Scripts\activate
+```
+Windows (PowerShell): 
+```bash
+.\env\Scripts\Activate.ps1
+```
+macOS/Linux:
+```bash
+source env/bin/activate
+```
+
+Then
+```bash
 pip install -r requirements.txt
-export GEMINI_API_KEY="your_gemini_api_key_here"
 # Ensure Redis is running on localhost:6379
 python app.py
 ```
@@ -92,23 +125,7 @@ npm install
 npm run dev
 ```
 
-#### Option 2: Docker Compose
 
-```bash
-docker-compose up --build
-```
-
-This will start:
-- Redis server (port 6379)
-- Backend Flask server (port 5000)
-- Frontend development server
-
-### Environment Variables
-
-Create a `.env` file in the `backend` directory:
-```
-GEMINI_API_KEY=your_api_key_here
-```
 
 ## 📊 How It Works
 
